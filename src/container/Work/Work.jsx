@@ -3,7 +3,7 @@ import { AiFillEye, AiFillGithub } from 'react-icons/ai';
 import { motion } from 'framer-motion';
 
 import { AppWrap,MotionWrap } from '../../wrapper';
-import { urlFor, client } from '../../client';
+
 import './Work.scss';
 
 const Work = () => {
@@ -13,14 +13,28 @@ const Work = () => {
 
   const [animateCard, setAnimateCard] = useState({ y: 0, opacity: 1 });
 
-  useEffect(() => {
-    const query = '*[_type =="works"]';
-    client.fetch(query)
-      .then((data) => {
-        setWorks(data)
-        setFilterWork(data)
-      })
-  }, []);
+  useEffect(()=>{
+
+    fetchData();
+
+  },[])
+
+  async function fetchData() {
+    try {
+      const response = await fetch('https://portfolio-backend-30mp.onrender.com/api/v1/get/user/65b3a22c01d900e96c4219ae');
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const {user} = await response.json();
+      setWorks(user.projects);
+      setFilterWork(user.projects)
+
+  
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      
+    }
+  }
 
   const handleWorkFilter = (item) => {
     setActiveFilter(item);
@@ -32,7 +46,7 @@ const Work = () => {
       if (item === 'All') {
         setFilterWork(works);
       } else {
-        setFilterWork(works.filter((work) => work.tags.includes(item)));
+        setFilterWork(works.filter((work) => work.techStack.includes(item)));
       }
     }, 500);
   };
@@ -42,7 +56,7 @@ const Work = () => {
     <>
       <h2 className='head-text'>My Creative <span>Portfolio</span> Section</h2>
       <div className='app__work-filter'>
-        {['UI/UX', 'Web App', 'Mobile App', 'React JS', 'All'].map((item, index) => (
+        {['Reactjs ', ' Nextjs ', ' Mern ', ' CSS', ' TailwindCSS'].map((item, index) => (
           <div
             key={index}
             onClick={() => handleWorkFilter(item)}
@@ -62,7 +76,7 @@ const Work = () => {
         {filterWork.map((work, index) => (
           <div className="app__work-item app__flex" key={index}>
             <div className="app__work-img app__flex" >
-              <img src={urlFor(work.imgUrl).url()} alt={work.name} />
+              <img src={work.image?.url} alt={work.name} />
               <motion.div
                 whileHover={{ opacity: [0, 1] }}
                 transition={{ duration: 0.25, ease: 'easeInOut', staggerChildren: 0.5 }}

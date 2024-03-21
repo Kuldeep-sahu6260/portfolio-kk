@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import { images } from '../../constants';
 import { AppWrap, MotionWrap } from '../../wrapper';
-import { client } from '../../client';
+
 import './Footer.scss';
 
 const Footer = () => {
@@ -27,12 +27,7 @@ const Footer = () => {
       message: formData.message,
     };
 
-    client.create(contact)
-      .then(() => {
-        setLoading(false);
-        setIsFormSubmitted(true);
-      })
-      .catch((err) => console.log(err));
+   
   };
 
   return (

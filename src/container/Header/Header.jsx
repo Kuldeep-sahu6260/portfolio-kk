@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect,useState } from 'react';
 import { motion } from "framer-motion";
 import { images } from '../../constants';
 import "./Header.scss";
 import { AppWrap } from "../../wrapper";
+
 
 const scaleVariants = {
   whileInView: {
@@ -15,7 +16,35 @@ const scaleVariants = {
   },
 };
 
+
+
+
+
 const Header = () => {
+
+  const [user, setUser] = useState([]);
+
+  useEffect(()=>{
+
+    fetchData();
+
+  },[])
+
+  async function fetchData() {
+    try {
+      const response = await fetch('https://portfolio-backend-30mp.onrender.com/api/v1/get/user/65b3a22c01d900e96c4219ae');
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const {user} = await response.json();
+      setUser(user.about);
+      console.log(user.about,"hello kk");
+  
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      
+    }
+  }
   return (
       <div  className="app__header app__flex">
       <motion.div
@@ -28,15 +57,15 @@ const Header = () => {
             <span>👋</span>
             <div style={{ marginLeft: 20 }}>
               <p className="p-text">Hello, I am</p>
-              <h1 className="head-text">Kuldeep</h1>
+              <h1 className="head-text">{user.name}</h1>
             </div>
           </div>
 
           <div className="tag-cmp app__flex">
-            <p className="p-text">Web Developer</p>
+            <h5 className="p-text">{user.title}</h5>
 
-            <p className="p-text">React-Native Developer</p>
-            <p className="p-text">ML Developer</p>
+            <p className="p-text">{user.subTitle}</p>
+            
           </div>
         </div>
       </motion.div>
@@ -46,7 +75,7 @@ const Header = () => {
         transition={{ duration: 0.5, delayChildren: 0.5 }}
         className="app__header-img"
       >
-        <img src={images.profile} alt="profile_bg" />
+        <img src={user.avatar?.url} alt="profile_bg" />
         <motion.img
           whileInView={{ scale: [0, 1] }}
           transition={{ duration: 1, ease: 'easeInOut' }}

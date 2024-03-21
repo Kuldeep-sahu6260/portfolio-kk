@@ -1,6 +1,6 @@
 import React,{useState,useEffect} from 'react'
 import {motion} from "framer-motion"
-import {urlFor,client} from "../../client"
+
 import "./About.scss";
 
 import { AppWrap ,MotionWrap} from '../../wrapper';
@@ -8,14 +8,29 @@ import { AppWrap ,MotionWrap} from '../../wrapper';
 const About = () => {
   const [abouts, setAbouts] = useState([]);
 
+  useEffect(()=>{
 
- useEffect(()=>{
-  const query = '*[_type == "abouts"]';
+    fetchData();
 
-  client.fetch(query)
-  .then((data)=> setAbouts(data));
+  },[])
 
- },[])
+  async function fetchData() {
+    try {
+      const response = await fetch('https://portfolio-backend-30mp.onrender.com/api/v1/get/user/65b3a22c01d900e96c4219ae');
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const {user} = await response.json();
+      setAbouts(user.services)
+  
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      
+    }
+  }
+
+
+
  
   return (
    
@@ -30,11 +45,11 @@ const About = () => {
             whileHover={{ scale: 1.1 }}
             transition={{ duration: 0.5, type: 'tween' }}
             className="app__profile-item"
-            key={about.title + index}
+            key={about._id}
         >
-          <img src={urlFor(about.imgUrl)} />
-          <h2 className="bold-text" style={{ marginTop: 20 }}>{about.title}</h2>
-            <p className="p-text" style={{ marginTop: 10 }}>{about.description}</p>
+          <img src={about.image?.url} />
+          <h2 className="bold-text" style={{ marginTop: 20 }}>{about.name}</h2>
+            <p className="p-text" style={{ marginTop: 10 }}>{about.desc}</p>
         </motion.div>
       ))
      }
